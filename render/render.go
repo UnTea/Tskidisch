@@ -2,13 +2,8 @@ package render
 
 import (
 	"github.com/UnTea/Tskidisch/linmath"
-	"image"
-	"image/color"
-	"image/png"
-	"log"
 	"math"
 	"math/rand"
-	"os"
 )
 
 const width, height, sampleCount int = 1024, 768, 16
@@ -28,14 +23,14 @@ func ACESFilm(x linmath.Vector) linmath.Vector {
 }
 
 func Render(spheres []Sphere) {
-	framebuffer := make([]linmath.Vector, width*height)
-	aspectRatio := float64(width) / float64(height)
+	framebuffer := NewFramebuffer(width, height)
+	aspectRatio := float64(framebuffer.Width) / float64(framebuffer.Height)
 
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
+	for y := 0; y < framebuffer.Height; y++ {
+		for x := 0; x < framebuffer.Width; x++ {
 
-			u := 2.0*(float64(x)+rand.Float64())/float64(width) - 1.0
-			v := -(2.0*(float64(y)+rand.Float64())/float64(height) - 1.0)
+			u := 2.0*(float64(x)+rand.Float64())/float64(framebuffer.Width) - 1.0
+			v := -(2.0*(float64(y)+rand.Float64())/float64(framebuffer.Height) - 1.0)
 			filmU := u * math.Tan(linmath.Radians(fov)/2) * aspectRatio
 			filmV := v * math.Tan(linmath.Radians(fov)/2)
 			direction := linmath.Vector{X: filmU, Y: filmV, Z: 1.0}.Norm()
@@ -65,40 +60,8 @@ func Render(spheres []Sphere) {
 				color = linmath.Add(linmath.MulOnScalar(color, 0.5), linmath.Splat(0.5))
 			}
 
-			framebuffer[x+y*width] = color
+			framebuffer.SetPixel(x, y, color)
 		}
 	}
-
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			//filmFramebuffer := ACESFilm(framebuffer[x+y*width])
-			filmFramebuffer := framebuffer[x+y*width]
-
-			img.Set(x, y, color.NRGBA{
-				R: uint8(255 * filmFramebuffer.X),
-				G: uint8(255 * filmFramebuffer.Y),
-				B: uint8(255 * filmFramebuffer.Z),
-				A: 255,
-			})
-		}
-	}
-
-	f, err := os.Create("image.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := png.Encode(f, img); err != nil {
-		err := f.Close()
-		if err != nil {
-			return
-		}
-		log.Fatal(err)
-	}
-
-	if err := f.Close(); err != nil {
-		log.Fatal(err)
-	}
+	framebuffer.SaveImage("image.png")
 }
