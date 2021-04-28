@@ -6,12 +6,6 @@ import (
 	"math/rand"
 )
 
-type Sphere struct {
-	Center linmath.Vector
-	Radius float64
-	Albedo linmath.Vector
-}
-
 type Ray struct {
 	Direction linmath.Vector
 	Origin    linmath.Vector
@@ -19,33 +13,6 @@ type Ray struct {
 
 func (ray Ray) PointAt(t float64) linmath.Vector {
 	return linmath.Add(ray.Origin, linmath.MulOnScalar(ray.Direction, t))
-}
-
-func (sphere Sphere) Normal(intersection linmath.Vector) linmath.Vector {
-	return linmath.Sub(intersection, sphere.Center).Norm()
-}
-
-func (sphere Sphere) RayIntersect(ray Ray) float64 {
-	oc := linmath.Sub(ray.Origin, sphere.Center)
-	b := linmath.Dot(oc, ray.Direction)
-	c := linmath.Dot(oc, oc) - sphere.Radius*sphere.Radius
-	h := b*b - c
-
-	if h < 0.0 {
-		return -1.0 // no intersection
-	}
-
-	h = math.Sqrt(h)
-
-	if -b-h > linmath.Epsilon {
-		return -b - h // t is -b -h
-	}
-
-	if -b+h > linmath.Epsilon {
-		return -b + h
-	}
-
-	return -1.0
 }
 
 func RandomUnitVectorInHemisphere(normal linmath.Vector) linmath.Vector {
@@ -70,19 +37,38 @@ func RandomUnitVectorInHemisphere(normal linmath.Vector) linmath.Vector {
 	}
 }
 
-func TraceRay(spheres []Sphere, ray Ray) linmath.Vector {
-	sphere, t := FindIntersection(spheres, ray)
+func TraceRay(primitives []Primitive, ray Ray) linmath.Vector {
+	primitive, t := FindIntersection(primitives, ray)
 
 	if t == math.MaxFloat64 {
 		return linmath.Splat(1)
 	}
 
 	ray = Ray{
-		Direction: RandomUnitVectorInHemisphere(sphere.Normal(ray.PointAt(t))),
+		Direction: RandomUnitVectorInHemisphere(primitive.Normal(ray.PointAt(t))),
 		Origin:    ray.PointAt(t),
 	}
 
-	color := linmath.Mul(sphere.Albedo, TraceRay(spheres, ray))
+	color := linmath.Mul(primitive.Albedo(), TraceRay(primitives, ray))
 
 	return color
+}
+
+func FindIntersection(primitives []Primitive, ray Ray) (Primitive, float64) {
+	var minT = math.MaxFloat64
+	var index int
+
+	for i := 0; i < len(primitives); i++ {
+		t := primitives[i].RayIntersect(ray)
+
+		if t == -1.0 {
+			continue
+		}
+
+		if t < minT {
+			minT, index = t, i
+		}
+	}
+
+	return primitives[index], minT
 }

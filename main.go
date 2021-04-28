@@ -5,17 +5,16 @@ import (
 	"github.com/UnTea/Tskidisch/render"
 )
 
-func main()  {
-	spheres := make([]render.Sphere, 2)
-	spheres[0] = render.Sphere{
-		Center: linmath.Vector{Z: 1.0},
-		Radius: 0.35,
-		Albedo: linmath.Vector{X: 0.769, Y: 0.54, Z: 0.11},
-	}
-	spheres[1] = render.Sphere{
-		Center: linmath.Vector{Y: -20.4, Z: 1.0},
-		Radius: 20.0,
-		Albedo: linmath.Vector{X: 0.409,Y: 0.24,Z: 0.81},
-	}
-	render.Render(spheres)
+func main() {
+	primitives := make([]render.Primitive, 2)
+	primitives[0] = render.NewSphere(
+		linmath.Vector{Z: 1.0},
+		0.35,
+		linmath.Vector{X: 0.769, Y: 0.54, Z: 0.11})
+	primitives[1] = render.NewSphere(
+		linmath.Vector{Y: -20.4, Z: 1.0},
+		20.0,
+		linmath.Vector{X: 0.409, Y: 0.24, Z: 0.81})
+
+	render.Render(primitives)
 }
