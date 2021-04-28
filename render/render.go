@@ -27,38 +27,45 @@ func ACESFilm(x linmath.Vector) linmath.Vector {
 	return linmath.Div(nominator, denominator).Clamp(0.0, 1.0)
 }
 
-func Render(sphere Sphere) {
+func Render(spheres []Sphere) {
 	framebuffer := make([]linmath.Vector, width*height)
 	aspectRatio := float64(width) / float64(height)
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 
-			var summa linmath.Vector
+			u := 2.0*(float64(x)+rand.Float64())/float64(width) - 1.0
+			v := -(2.0*(float64(y)+rand.Float64())/float64(height) - 1.0)
+			filmU := u * math.Tan(linmath.Radians(fov)/2) * aspectRatio
+			filmV := v * math.Tan(linmath.Radians(fov)/2)
+			direction := linmath.Vector{X: filmU, Y: filmV, Z: 1.0}.Norm()
+			ray := Ray{Direction: direction, Origin: linmath.Vector{}}
 
-			for i := 0; i < sampleCount; i++ {
-				u := 2.0*(float64(x)+rand.Float64())/float64(width) - 1.0
-				v := -(2.0*(float64(y)+rand.Float64())/float64(height) - 1.0)
+			var minT float64 = math.MaxFloat64
+			var index int
 
-				filmU := u * math.Tan(linmath.Radians(fov)/2) * aspectRatio
-				filmV := v * math.Tan(linmath.Radians(fov)/2)
-
-				direction := linmath.Vector{X: filmU, Y: filmV, Z: 1.0}.Norm()
-				ray := Ray{Direction: direction, Origin: linmath.Vector{}}
-				t := sphere.RayIntersect(ray)
-				var color linmath.Vector
+			for i := 0; i < len(spheres); i++ {
+				t := spheres[i].RayIntersect(ray)
 
 				if t == -1.0 {
-					color = linmath.Splat(1)
-				} else {
-					color = sphere.Normal(ray.PointAt(t))
-					color = linmath.Add(linmath.MulOnScalar(color, 0.5), linmath.Splat(0.5))
+					continue
 				}
 
-				summa = linmath.Add(summa, color)
+				if t < minT {
+					minT, index = t, i
+				}
 			}
-			summa = linmath.DivOnScalar(summa, float64(sampleCount))
-			framebuffer[x+y*width] = summa
+
+			var color linmath.Vector
+
+			if minT == math.MaxFloat64 {
+				color = linmath.Splat(1)
+			} else {
+				color = spheres[index].Normal(ray.PointAt(minT))
+				color = linmath.Add(linmath.MulOnScalar(color, 0.5), linmath.Splat(0.5))
+			}
+
+			framebuffer[x+y*width] = color
 		}
 	}
 

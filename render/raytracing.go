@@ -34,5 +34,14 @@ func (sphere Sphere) RayIntersect(ray Ray) float64 {
 	}
 
 	h = math.Sqrt(h)
-	return -b - h // t is -b -h
+
+	if -b - h > 0 {
+		return -b - h // t is -b -h
+	}
+
+	if -b +h > 0 {
+		return -b + h
+	}
+
+	return -1.0
 }
