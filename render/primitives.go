@@ -17,12 +17,48 @@ type Sphere struct {
 	albedo linmath.Vector
 }
 
+type Plane struct {
+	point  linmath.Vector
+	normal linmath.Vector
+	albedo linmath.Vector
+}
+
 func NewSphere(center linmath.Vector, radius float64, albedo linmath.Vector) Sphere {
 	return Sphere{
 		center: center,
 		albedo: albedo,
 		radius: radius,
 	}
+}
+
+func NewPlane(point, normal, albedo linmath.Vector) Plane {
+	return Plane{
+		point:  point,
+		normal: normal.Norm(),
+		albedo: albedo,
+	}
+}
+
+func (plane Plane) Albedo() linmath.Vector {
+	return plane.albedo
+}
+
+func (plane Plane) Normal(intersection linmath.Vector) linmath.Vector {
+	return plane.normal
+}
+
+func (plane Plane) RayIntersect(ray Ray) float64 {
+	denominator := linmath.Dot(plane.normal, ray.Direction)
+
+	if math.Abs(denominator) > linmath.Epsilon {
+		t := linmath.Dot(linmath.Sub(plane.point, ray.Origin), plane.normal) / denominator
+
+		if t >= linmath.Epsilon {
+			return t
+		}
+	}
+
+	return -1.0
 }
 
 func (sphere Sphere) Albedo() linmath.Vector {
