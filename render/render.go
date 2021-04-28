@@ -51,7 +51,8 @@ func Render(sphere Sphere) {
 				if t == -1.0 {
 					color = linmath.Splat(1)
 				} else {
-					color = linmath.Vector{X: 1, Y: 0.55}
+					color = sphere.Normal(ray.PointAt(t))
+					color = linmath.Add(linmath.MulOnScalar(color, 0.5), linmath.Splat(0.5))
 				}
 
 				summa = linmath.Add(summa, color)
@@ -65,7 +66,8 @@ func Render(sphere Sphere) {
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			filmFramebuffer := ACESFilm(framebuffer[x+y*width])
+			//filmFramebuffer := ACESFilm(framebuffer[x+y*width])
+			filmFramebuffer := framebuffer[x+y*width]
 
 			img.Set(x, y, color.NRGBA{
 				R: uint8(255 * filmFramebuffer.X),
@@ -76,7 +78,7 @@ func Render(sphere Sphere) {
 		}
 	}
 
-	f, err := os.Create("render.png")
+	f, err := os.Create("image.png")
 	if err != nil {
 		log.Fatal(err)
 	}
