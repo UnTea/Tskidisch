@@ -22,6 +22,25 @@ func ACESFilm(x linmath.Vector) linmath.Vector {
 	return linmath.Div(nominator, denominator).Clamp(0.0, 1.0)
 }
 
+func FindIntersection(spheres []Sphere, ray Ray) (Sphere, float64) {
+	var minT = math.MaxFloat64
+	var index int
+
+	for i := 0; i < len(spheres); i++ {
+		t := spheres[i].RayIntersect(ray)
+
+		if t == -1.0 {
+			continue
+		}
+
+		if t < minT {
+			minT, index = t, i
+		}
+	}
+
+	return spheres[index], minT
+}
+
 func Render(spheres []Sphere) {
 	framebuffer := NewFramebuffer(width, height)
 	aspectRatio := float64(framebuffer.Width) / float64(framebuffer.Height)
@@ -31,34 +50,14 @@ func Render(spheres []Sphere) {
 
 			u := 2.0*(float64(x)+rand.Float64())/float64(framebuffer.Width) - 1.0
 			v := -(2.0*(float64(y)+rand.Float64())/float64(framebuffer.Height) - 1.0)
+
 			filmU := u * math.Tan(linmath.Radians(fov)/2) * aspectRatio
 			filmV := v * math.Tan(linmath.Radians(fov)/2)
+
 			direction := linmath.Vector{X: filmU, Y: filmV, Z: 1.0}.Norm()
 			ray := Ray{Direction: direction, Origin: linmath.Vector{}}
 
-			var minT float64 = math.MaxFloat64
-			var index int
-
-			for i := 0; i < len(spheres); i++ {
-				t := spheres[i].RayIntersect(ray)
-
-				if t == -1.0 {
-					continue
-				}
-
-				if t < minT {
-					minT, index = t, i
-				}
-			}
-
-			var color linmath.Vector
-
-			if minT == math.MaxFloat64 {
-				color = linmath.Splat(1)
-			} else {
-				color = spheres[index].Normal(ray.PointAt(minT))
-				color = linmath.Add(linmath.MulOnScalar(color, 0.5), linmath.Splat(0.5))
-			}
+			color := TraceRay(spheres, ray)
 
 			framebuffer.SetPixel(x, y, color)
 		}

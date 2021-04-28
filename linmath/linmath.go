@@ -2,6 +2,10 @@ package linmath
 
 import "math"
 
+const (
+	Epsilon float64 = 1e-3
+)
+
 type Vector struct {
 	X, Y, Z float64
 }
@@ -31,10 +35,6 @@ func Mul(v1 Vector, v2 Vector) Vector {
 	}
 }
 
-func Dot(v1 Vector, v2 Vector) float64 {
-	return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z
-}
-
 func MulOnScalar(v Vector, scalar float64) Vector {
 	return Vector{
 		X: v.X * scalar,
@@ -43,12 +43,8 @@ func MulOnScalar(v Vector, scalar float64) Vector {
 	}
 }
 
-func DivOnScalar(v Vector, scalar float64) Vector {
-	return Vector{
-		X: v.X / scalar,
-		Y: v.Y / scalar,
-		Z: v.Z / scalar,
-	}
+func Dot(v1 Vector, v2 Vector) float64 {
+	return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z
 }
 
 func Add(v1 Vector, v2 Vector) Vector {
@@ -72,6 +68,14 @@ func Div(v1 Vector, v2 Vector) Vector {
 		X: v1.X / v2.X,
 		Y: v1.Y / v2.Y,
 		Z: v1.Z / v2.Z,
+	}
+}
+
+func DivOnScalar(v Vector, scalar float64) Vector {
+	return Vector{
+		X: v.X / scalar,
+		Y: v.Y / scalar,
+		Z: v.Z / scalar,
 	}
 }
 

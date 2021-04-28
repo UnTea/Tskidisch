@@ -7,7 +7,15 @@ import (
 
 func main()  {
 	spheres := make([]render.Sphere, 2)
-	spheres[0] = render.Sphere{Center: linmath.Vector{Z: 1.0}, Radius: 0.35}
-	spheres[1] = render.Sphere{Center: linmath.Vector{Y: -20.4, Z: 1.0}, Radius: 20.0}
+	spheres[0] = render.Sphere{
+		Center: linmath.Vector{Z: 1.0},
+		Radius: 0.35,
+		Albedo: linmath.Vector{X: 0.769, Y: 0.54, Z: 0.11},
+	}
+	spheres[1] = render.Sphere{
+		Center: linmath.Vector{Y: -20.4, Z: 1.0},
+		Radius: 20.0,
+		Albedo: linmath.Vector{X: 0.409,Y: 0.24,Z: 0.81},
+	}
 	render.Render(spheres)
 }
