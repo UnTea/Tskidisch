@@ -9,36 +9,36 @@ import (
 	"os"
 )
 
-type Framebuffer struct {
+type Image struct {
 	Pixels []linmath.Vector
 	Width  int
 	Height int
 }
 
-func NewFramebuffer(width, height int) Framebuffer {
-	return Framebuffer{
+func NewImage(width, height int) Image {
+	return Image{
 		Pixels: make([]linmath.Vector, width*height),
 		Width:  width,
 		Height: height,
 	}
 }
 
-func (framebuffer Framebuffer) SetPixel(x, y int, color linmath.Vector) {
-	framebuffer.Pixels[x+y*framebuffer.Width] = color
+func (img Image) SetPixel(x, y int, color linmath.Vector) {
+	img.Pixels[x+y*img.Width] = color
 }
 
-func (framebuffer Framebuffer) SaveImage(path string) {
+func (img Image) Save(path string) {
 
-	img := image.NewRGBA(image.Rect(0, 0, framebuffer.Width, framebuffer.Height))
+	i := image.NewRGBA(image.Rect(0, 0, img.Width, img.Height))
 
-	for y := 0; y < framebuffer.Height; y++ {
-		for x := 0; x < framebuffer.Width; x++ {
-			//filmFramebuffer := ACESFilm(framebuffer[x+y*width])
+	for y := 0; y < img.Height; y++ {
+		for x := 0; x < img.Width; x++ {
+			//filmFramebuffer := ACESFilm(img[x+y*width])
 
-			img.Set(x, y, color.NRGBA{
-				R: uint8(255 * framebuffer.Pixels[x+y*framebuffer.Width].X),
-				G: uint8(255 * framebuffer.Pixels[x+y*framebuffer.Width].Y),
-				B: uint8(255 * framebuffer.Pixels[x+y*framebuffer.Width].Z),
+			i.Set(x, y, color.NRGBA{
+				R: uint8(255 * img.Pixels[x+y*img.Width].X),
+				G: uint8(255 * img.Pixels[x+y*img.Width].Y),
+				B: uint8(255 * img.Pixels[x+y*img.Width].Z),
 				A: 255,
 			})
 		}
@@ -49,7 +49,7 @@ func (framebuffer Framebuffer) SaveImage(path string) {
 		log.Fatal(err)
 	}
 
-	if err := png.Encode(f, img); err != nil {
+	if err := png.Encode(f, i); err != nil {
 		err := f.Close()
 		if err != nil {
 			return
