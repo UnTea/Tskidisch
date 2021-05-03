@@ -34,11 +34,12 @@ func (img Image) Save(path string) {
 	for y := 0; y < img.Height; y++ {
 		for x := 0; x < img.Width; x++ {
 			//filmFramebuffer := ACESFilm(img[x+y*width])
+			ldrcolor := img.Pixels[x+y*img.Width].Pow(1.0/2.2).Clamp(0.0, 1.0)
 
 			i.Set(x, y, color.NRGBA{
-				R: uint8(255 * img.Pixels[x+y*img.Width].X),
-				G: uint8(255 * img.Pixels[x+y*img.Width].Y),
-				B: uint8(255 * img.Pixels[x+y*img.Width].Z),
+				R: uint8(255 * ldrcolor.X),
+				G: uint8(255 * ldrcolor.Y),
+				B: uint8(255 * ldrcolor.Z),
 				A: 255,
 			})
 		}

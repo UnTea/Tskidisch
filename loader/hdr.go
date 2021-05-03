@@ -3,7 +3,6 @@ package loader
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"github.com/UnTea/Tskidisch/linmath"
 	"github.com/UnTea/Tskidisch/render"
 	"io"
@@ -143,7 +142,6 @@ func unpackRLEScanline(y int, reader *bytes.Reader, image *render.Image) {
 
 	for x := 0; x < image.Width; x++ {
 		color := decodeRGBE(red[x], green[x], blue[x], exp[x])
-		fmt.Printf("%v %v\n",x, y)
 		image.SetPixel(x, y, color)
 	}
 }

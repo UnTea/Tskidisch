@@ -95,6 +95,14 @@ func Splat(scalar float64) Vector {
 	}
 }
 
+func (v Vector) Pow(scalar float64) Vector {
+	return Vector{
+		X: math.Pow(v.X, scalar),
+		Y: math.Pow(v.Y, scalar),
+		Z: math.Pow(v.Z, scalar),
+	}
+}
+
 func Radians(degrees float64) float64 {
 	return math.Pi * degrees / 180
 }

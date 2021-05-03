@@ -14,6 +14,6 @@ func main() {
 	//	linmath.Vector{X: 0.69, Y: 0.420, Z: 0.228})
 	//
 	//render.Render(primitives)
-	image := loader.LoadHDR("sources/wooden_lounge_1k.hdr")
-	image.Save("output/test.png")
+	image := loader.LoadHDR("wooden_lounge_1k.hdr")
+	image.Save("test.png")
 }
