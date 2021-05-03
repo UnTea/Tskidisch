@@ -15,29 +15,29 @@ func (ray Ray) PointAt(t float64) linmath.Vector {
 	return ray.Origin.Add(ray.Direction.MulOnScalar(t))
 }
 
-func RandomUnitVectorInHemisphere(normal linmath.Vector) linmath.Vector {
-	var random linmath.Vector
+func RandomUnitVectorInHemisphere(normal linmath.Vector, random *rand.Rand) linmath.Vector {
+	var randomVector linmath.Vector
 
 	for {
-		random = linmath.Vector{
-			X: rand.Float64(),
-			Y: rand.Float64(),
-			Z: rand.Float64(),
+		randomVector = linmath.Vector{
+			X: random.Float64(),
+			Y: random.Float64(),
+			Z: random.Float64(),
 		}
-		random = random.MulOnScalar(2.0).Add(linmath.Splat(-1.0))
+		randomVector = randomVector.MulOnScalar(2.0).Add(linmath.Splat(-1.0))
 
-		if random.Dot(random) > 1.0 {
+		if randomVector.Dot(randomVector) > 1.0 {
 			continue
 		}
 
-		if random.Dot(normal) >= 0.0 {
-			return random.Norm()
+		if randomVector.Dot(normal) >= 0.0 {
+			return randomVector.Norm()
 		}
-		return random.Negative().Norm()
+		return randomVector.Negative().Norm()
 	}
 }
 
-func TraceRay(primitives []Primitive, ray Ray, environmentMap Image) linmath.Vector {
+func TraceRay(primitives []Primitive, ray Ray, environmentMap Image, random *rand.Rand) linmath.Vector {
 	primitive, t := FindIntersection(primitives, ray)
 
 	if t == math.MaxFloat64 {
@@ -48,11 +48,11 @@ func TraceRay(primitives []Primitive, ray Ray, environmentMap Image) linmath.Vec
 	}
 
 	ray = Ray{
-		Direction: RandomUnitVectorInHemisphere(primitive.Normal(ray.PointAt(t))),
+		Direction: RandomUnitVectorInHemisphere(primitive.Normal(ray.PointAt(t)), random),
 		Origin:    ray.PointAt(t),
 	}
 
-	color := primitive.Albedo().Mul(TraceRay(primitives, ray, environmentMap))
+	color := primitive.Albedo().Mul(TraceRay(primitives, ray, environmentMap, random))
 
 	return color
 }

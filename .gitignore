@@ -1,4 +1,6 @@
-.idea/
 *.png
-TODO.md
 *.hdr
+*.exe
+.idea/
+TODO.md
+cpuprofile

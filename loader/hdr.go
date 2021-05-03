@@ -108,12 +108,12 @@ func unpackRLEScanline(y int, reader *bytes.Reader, image *render.Image) {
 
 	newRLEIndicator := readU16(reader)
 	if newRLEIndicator != 0x0202 {
-		log.Fatal("hdr::parse(): only New RLE HDRs are supported");
+		log.Fatal("hdr::parse(): only New RLE HDRs are supported")
 	}
 
 	scanlineWidth := readU16(reader)
 	if int(scanlineWidth) != image.Width {
-		log.Fatal("hdr::parse(): bad scanline width");
+		log.Fatal("hdr::parse(): bad scanline width")
 	}
 
 	for i := 0; i < 4; i++ {
