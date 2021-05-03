@@ -7,9 +7,9 @@ import (
 )
 
 const width, height, sampleCount int = 1024, 768, 16
-const fov float64 = 90
+const fov float64 = 120
 
-func Render(primitive []Primitive) {
+func Render(primitive []Primitive, environmentMap Image) Image {
 	image := NewImage(width, height)
 	aspectRatio := float64(image.Width) / float64(image.Height)
 
@@ -28,11 +28,11 @@ func Render(primitive []Primitive) {
 				direction := linmath.Vector{X: filmU, Y: filmV, Z: 1.0}.Norm()
 				ray := Ray{Direction: direction, Origin: linmath.Vector{}}
 
-				color := TraceRay(primitive, ray)
+				color := TraceRay(primitive, ray, environmentMap)
 				sum = sum.Add(color)
 			}
 			image.SetPixel(x, y, sum.DivOnScalar(float64(sampleCount)))
 		}
 	}
-	image.Save("image.png")
+	return image
 }

@@ -37,11 +37,14 @@ func RandomUnitVectorInHemisphere(normal linmath.Vector) linmath.Vector {
 	}
 }
 
-func TraceRay(primitives []Primitive, ray Ray) linmath.Vector {
+func TraceRay(primitives []Primitive, ray Ray, environmentMap Image) linmath.Vector {
 	primitive, t := FindIntersection(primitives, ray)
 
 	if t == math.MaxFloat64 {
-		return linmath.Splat(1.0)
+		phi := math.Atan2(ray.Direction.Z, ray.Direction.X)
+		omega := math.Sqrt(math.Sqrt(ray.Direction.Dot(ray.Direction)))
+		theta := math.Atan2(ray.Direction.Y, omega)
+		return environmentMap.GetPixelBySphericalCoordinates(phi, theta)
 	}
 
 	ray = Ray{
@@ -49,7 +52,7 @@ func TraceRay(primitives []Primitive, ray Ray) linmath.Vector {
 		Origin:    ray.PointAt(t),
 	}
 
-	color := primitive.Albedo().Mul(TraceRay(primitives, ray))
+	color := primitive.Albedo().Mul(TraceRay(primitives, ray, environmentMap))
 
 	return color
 }

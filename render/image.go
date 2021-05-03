@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"image/png"
 	"log"
+	"math"
 	"os"
 )
 
@@ -25,6 +26,22 @@ func NewImage(width, height int) Image {
 
 func (img Image) SetPixel(x, y int, color linmath.Vector) {
 	img.Pixels[x+y*img.Width] = color
+}
+
+func (img Image) GetPixel(x, y int) linmath.Vector {
+	return img.Pixels[x+y*img.Width]
+}
+
+func (img Image) GetPixelUV(u, v float64) linmath.Vector {
+	x := int(float64(img.Width) * (1.0 - u))
+	y := int(float64(img.Height) * (1.0 - v))
+	return img.GetPixel(x, y)
+}
+
+func (img Image) GetPixelBySphericalCoordinates(phi, theta float64) linmath.Vector {
+	u := (phi + math.Pi) / (2 * math.Pi)
+	v := (theta + math.Pi / 2) / (math.Pi)
+	return img.GetPixelUV(u, v)
 }
 
 func (img Image) Save(path string) {
