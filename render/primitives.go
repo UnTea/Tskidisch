@@ -48,10 +48,10 @@ func (plane Plane) Normal(intersection linmath.Vector) linmath.Vector {
 }
 
 func (plane Plane) RayIntersect(ray Ray) float64 {
-	denominator := linmath.Dot(plane.normal, ray.Direction)
+	denominator := plane.normal.Dot(ray.Direction)
 
 	if math.Abs(denominator) > linmath.Epsilon {
-		t := linmath.Dot(linmath.Sub(plane.point, ray.Origin), plane.normal) / denominator
+		t := plane.point.Sub(ray.Origin).Dot(plane.normal) / denominator
 
 		if t >= linmath.Epsilon {
 			return t
@@ -66,13 +66,13 @@ func (sphere Sphere) Albedo() linmath.Vector {
 }
 
 func (sphere Sphere) Normal(intersection linmath.Vector) linmath.Vector {
-	return linmath.Sub(intersection, sphere.center).Norm()
+	return intersection.Sub(sphere.center).Norm()
 }
 
 func (sphere Sphere) RayIntersect(ray Ray) float64 {
-	oc := linmath.Sub(ray.Origin, sphere.center)
-	b := linmath.Dot(oc, ray.Direction)
-	c := linmath.Dot(oc, oc) - sphere.radius*sphere.radius
+	oc := ray.Origin.Sub(sphere.center)
+	b := oc.Dot(ray.Direction)
+	c := oc.Dot(oc) - sphere.radius*sphere.radius
 	h := b*b - c
 
 	if h < 0.0 {

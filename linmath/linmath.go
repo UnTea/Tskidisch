@@ -3,7 +3,7 @@ package linmath
 import "math"
 
 const (
-	Epsilon float64 = 1e-3
+	Epsilon float64 = 1e-5
 )
 
 type Vector struct {
@@ -16,7 +16,7 @@ func (v Vector) Length() float64 {
 
 func (v Vector) Norm() Vector {
 	invert := 1.0 / v.Length()
-	return MulOnScalar(v, invert)
+	return v.MulOnScalar(invert)
 }
 
 func (v Vector) Negative() Vector {
@@ -27,15 +27,15 @@ func (v Vector) Negative() Vector {
 	}
 }
 
-func Mul(v1 Vector, v2 Vector) Vector {
+func (v Vector) Mul(v2 Vector) Vector {
 	return Vector{
-		X: v1.X * v2.X,
-		Y: v1.Y * v2.Y,
-		Z: v1.Z * v2.Z,
+		X: v.X * v2.X,
+		Y: v.Y * v2.Y,
+		Z: v.Z * v2.Z,
 	}
 }
 
-func MulOnScalar(v Vector, scalar float64) Vector {
+func (v Vector) MulOnScalar(scalar float64) Vector {
 	return Vector{
 		X: v.X * scalar,
 		Y: v.Y * scalar,
@@ -43,35 +43,35 @@ func MulOnScalar(v Vector, scalar float64) Vector {
 	}
 }
 
-func Dot(v1 Vector, v2 Vector) float64 {
-	return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z
+func (v Vector) Dot(v2 Vector) float64 {
+	return v.X*v2.X + v.Y*v2.Y + v.Z*v2.Z
 }
 
-func Add(v1 Vector, v2 Vector) Vector {
+func (v Vector) Add(v2 Vector) Vector {
 	return Vector{
-		X: v1.X + v2.X,
-		Y: v1.Y + v2.Y,
-		Z: v1.Z + v2.Z,
+		X: v.X + v2.X,
+		Y: v.Y + v2.Y,
+		Z: v.Z + v2.Z,
 	}
 }
 
-func Sub(v1 Vector, v2 Vector) Vector {
+func (v Vector) Sub(v2 Vector) Vector {
 	return Vector{
-		X: v1.X - v2.X,
-		Y: v1.Y - v2.Y,
-		Z: v1.Z - v2.Z,
+		X: v.X - v2.X,
+		Y: v.Y - v2.Y,
+		Z: v.Z - v2.Z,
 	}
 }
 
-func Div(v1 Vector, v2 Vector) Vector {
+func (v Vector) Div(v2 Vector) Vector {
 	return Vector{
-		X: v1.X / v2.X,
-		Y: v1.Y / v2.Y,
-		Z: v1.Z / v2.Z,
+		X: v.X / v2.X,
+		Y: v.Y / v2.Y,
+		Z: v.Z / v2.Z,
 	}
 }
 
-func DivOnScalar(v Vector, scalar float64) Vector {
+func (v Vector) DivOnScalar(scalar float64) Vector {
 	return Vector{
 		X: v.X / scalar,
 		Y: v.Y / scalar,
@@ -87,14 +87,6 @@ func (v Vector) Clamp(min, max float64) Vector {
 	}
 }
 
-func Splat(scalar float64) Vector {
-	return Vector{
-		X: scalar,
-		Y: scalar,
-		Z: scalar,
-	}
-}
-
 func (v Vector) Pow(scalar float64) Vector {
 	return Vector{
 		X: math.Pow(v.X, scalar),
@@ -105,4 +97,12 @@ func (v Vector) Pow(scalar float64) Vector {
 
 func Radians(degrees float64) float64 {
 	return math.Pi * degrees / 180
+}
+
+func Splat(scalar float64) Vector {
+	return Vector{
+		X: scalar,
+		Y: scalar,
+		Z: scalar,
+	}
 }

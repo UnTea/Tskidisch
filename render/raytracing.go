@@ -12,7 +12,7 @@ type Ray struct {
 }
 
 func (ray Ray) PointAt(t float64) linmath.Vector {
-	return linmath.Add(ray.Origin, linmath.MulOnScalar(ray.Direction, t))
+	return ray.Origin.Add(ray.Direction.MulOnScalar(t))
 }
 
 func RandomUnitVectorInHemisphere(normal linmath.Vector) linmath.Vector {
@@ -24,13 +24,13 @@ func RandomUnitVectorInHemisphere(normal linmath.Vector) linmath.Vector {
 			Y: rand.Float64(),
 			Z: rand.Float64(),
 		}
-		random = linmath.Add(linmath.MulOnScalar(random, 2), linmath.Splat(-1))
+		random = random.MulOnScalar(2.0).Add(linmath.Splat(-1.0))
 
-		if linmath.Dot(random, random) > 1 {
+		if random.Dot(random) > 1.0 {
 			continue
 		}
 
-		if linmath.Dot(random, normal) >= 0 {
+		if random.Dot(normal) >= 0.0 {
 			return random.Norm()
 		}
 		return random.Negative().Norm()
@@ -41,7 +41,7 @@ func TraceRay(primitives []Primitive, ray Ray) linmath.Vector {
 	primitive, t := FindIntersection(primitives, ray)
 
 	if t == math.MaxFloat64 {
-		return linmath.Splat(1)
+		return linmath.Splat(1.0)
 	}
 
 	ray = Ray{
@@ -49,7 +49,7 @@ func TraceRay(primitives []Primitive, ray Ray) linmath.Vector {
 		Origin:    ray.PointAt(t),
 	}
 
-	color := linmath.Mul(primitive.Albedo(), TraceRay(primitives, ray))
+	color := primitive.Albedo().Mul(TraceRay(primitives, ray))
 
 	return color
 }

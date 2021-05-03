@@ -29,10 +29,10 @@ func Render(primitive []Primitive) {
 				ray := Ray{Direction: direction, Origin: linmath.Vector{}}
 
 				color := TraceRay(primitive, ray)
-				sum = linmath.Add(sum, color)
+				sum = sum.Add(color)
 			}
-			image.SetPixel(x, y, linmath.DivOnScalar(sum, float64(sampleCount)))
+			image.SetPixel(x, y, sum.DivOnScalar(float64(sampleCount)))
 		}
 	}
-	image.Save("output/image.png")
+	image.Save("image.png")
 }
