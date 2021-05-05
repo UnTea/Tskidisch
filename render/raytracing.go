@@ -42,8 +42,9 @@ func TraceRay(primitives []Primitive, ray Ray, environmentMap Image, random *ran
 
 	if t == math.MaxFloat64 {
 		phi := math.Atan2(ray.Direction.Z, ray.Direction.X)
-		omega := math.Sqrt(math.Sqrt(ray.Direction.Dot(ray.Direction)))
+		omega := math.Sqrt((ray.Direction.X * ray.Direction.X) + (ray.Direction.Z * ray.Direction.Z))
 		theta := math.Atan2(ray.Direction.Y, omega)
+
 		return environmentMap.GetPixelBySphericalCoordinates(phi, theta)
 	}
 

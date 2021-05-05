@@ -37,12 +37,11 @@ func main() {
 		render.NewSphere(
 			linmath.Vector{Z: 1.0},
 			0.35,
-			linmath.Vector{X: 1.0, Y: 1.0, Z: 1.0}),
-		render.NewPlane(
-			linmath.Vector{Y: -0.35, Z: 1.0},
-			linmath.Vector{Y: 1.0},
-			linmath.Vector{X: 0.69, Y: 0.420, Z: 0.228}),
-	}
+			linmath.Vector{X: 1.0, Y: 1.0, Z: 1.0})}
+	//render.NewPlane(
+	//	linmath.Vector{Y: -0.35, Z: 1.0},
+	//	linmath.Vector{Y: 1.0},
+	//	linmath.Vector{X: 0.69, Y: 0.420, Z: 0.228})
 
 	//environmentMap := loader.LoadHDR("wooden_lounge_1k.hdr")
 	environmentMap := loader.LoadHDR("comfy_cafe_16k.hdr")
@@ -50,5 +49,5 @@ func main() {
 	output.Save("image.png")
 	t := time.Now()
 	elapsed := t.Sub(start)
-	fmt.Printf("%v\n", elapsed)
+	fmt.Printf("Time elapsed: %v\n", elapsed)
 }
